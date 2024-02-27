@@ -30,9 +30,9 @@ void SVGinit(SVGwriter *svg, char *nom, int sizeX, int sizeY) {
   svg->gencol[12]='C';svg->gencol[13]='D';svg->gencol[14]='E';svg->gencol[15]='F';
 
   fprintf(svg->file,"<html><body><svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.2\"");
-  //fprintf(svg->file, " width=\"250%%\" height=\"250%%\"");
+  fprintf(svg->file, " width=\"100%%\" height=\"100%%\"");
   //fprintf(svg->file, " width=\"1000\" height=\"1000\"");
-  fprintf(svg->file, " viewBox=\"%lf %lf %lf %lf\"", -0.0, -0.0, sizeX+7.0, sizeY+7.0);
+  fprintf(svg->file, " viewBox=\"%lf %lf %lf %lf\"", -2., -2., sizeX+7.0, sizeY+7.0);
   fprintf(svg->file, " preserveAspectRatio=\"yes\">\n");
   fprintf(svg->file, "<g >\n\n");
 

@@ -1,6 +1,6 @@
 /build/
 
 chaine_main
-t.txt
-index.html
-test.html
+
+*.txt
+*.html
