@@ -23,7 +23,7 @@ typedef struct {
 } Chaines;
 
 Chaines* lectureChaines(FILE *f);
-int nb_points(CellPoint *c); //Fonction rajoutée de notre part afin de compter le nombre de points dans une liste de points;
+int nb_points(CellPoint *c); //Fonction rajoutée de notre part afin de compter le nombre de points dans une liste de points
 void ecrireChaines(Chaines *C, FILE *f);
 void afficheChainesSVG(Chaines *C, char* nomInstance);
 double longueurTotale(Chaines *C);

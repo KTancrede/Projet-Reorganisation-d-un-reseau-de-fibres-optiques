@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "SVGwriter.h"
+#include "../header/SVGwriter.h"
 
 
 
@@ -31,8 +31,9 @@ void SVGinit(SVGwriter *svg, char *nom, int sizeX, int sizeY) {
 
   fprintf(svg->file,"<html><body><svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.2\"");
   fprintf(svg->file, " width=\"100%%\" height=\"100%%\"");
-  fprintf(svg->file, " viewBox=\"%lf %lf %lf %lf\"", -2.0, -2.0, sizeX+7.0, sizeY+7.0);
-  fprintf(svg->file, " preserveAspectRatio=\"yes\">\n");
+  fprintf(svg->file, " viewBox=\"%lf %lf %lf %lf\"", 20.0, 20.0, sizeX+7.0, sizeY+7.0);
+  //fprintf(svg->file, " preserveAspectRatio=\"no\">\n");
+  fprintf(svg->file, " preserveAspectRatio=\"xMidYMid meet\">\n");
   fprintf(svg->file, "<g >\n\n");
 
    svg->lineColor[0]='#';
