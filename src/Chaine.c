@@ -95,7 +95,7 @@ void afficheChainesSVG(Chaines *C, char* nomInstance){
         return;
     }
 
-    SVGinit(svg,nomInstance,700,600);
+    SVGinit(svg,nomInstance,800,600);
     SVGlineRandColor(svg);
     SVGpointColor(svg,Red);
 
