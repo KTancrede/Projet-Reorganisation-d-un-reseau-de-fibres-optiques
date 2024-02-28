@@ -27,7 +27,7 @@ Noeud* rechercheCreeNoeudListe(Reseau *R, double x, double y){
         return NULL;
     }
     Noeud *n=(Noeud*)malloc(sizeof(Noeud));
-    if(c_n==NULL){
+    if(n==NULL){
         fprintf(stderr,"Erreur lors de l'allocation mémoire de n dans RechercheCreeeNoeudListe\n");
         return NULL;
     }
