@@ -136,12 +136,34 @@ Reseau* reconstitueReseauListe(Chaines *C) {
 
     return r;
 }
-
+/*
+// Cette fonction permet de compte le nombre de liaison dans un réseau
 int nbLiaisons(Reseau *R){
+    if(R==NULL){
+        perror("Erreur dans nbLiaisons de R");
+        return -1;
+    }
+    R->
+        
     return 0;
 }
+*/
+
+// Cette fonction permet de compter le nombre de commodites dans un réseau 
 int nbCommodites(Reseau *R){
-    return 0;
+    if(R==NULL){
+        perror("Erreur dans nbLiaisons de R");
+        return -1;
+    }
+
+    CellCommodite* ccom=R->commodites;
+    int compteur=0;
+    
+    while (ccom)
+    {
+        compteur++;
+    }
+    return compteur;
 }
 
 
