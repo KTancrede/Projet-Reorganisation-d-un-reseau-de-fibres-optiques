@@ -5,94 +5,128 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-
-Noeud* rechercheCreeNoeudListe(Reseau *R, double x, double y){
-    if(R==NULL){
-        fprintf(stderr,"R non définie dans rechercheCreeNoeudListe\n");
+/*Cette fonction permet de rechercher si un noeud est déjà présent dans le réseau
+Si c'est le cas alors elle retourne ce noeud
+Sinon elle en crée un en mettant à jour le nbNoeuds de R*/
+Noeud* rechercheCreeNoeudListe(Reseau *R, double x, double y) {
+    if (R == NULL) {
+        perror("R non définie dans rechercheCreeNoeudListe");
         return NULL;
     }
-    //Verification de s'il existe ou pas déjà ce noeud
-    CellNoeud *cn=R->noeuds;
-    while(cn!=NULL){
-        if(cn->nd->x==x&&cn->nd->y==y){
+
+    // Recherche si le noeud existe déjà
+    CellNoeud *cn = R->noeuds;
+    while (cn != NULL) {
+        if (cn->nd->x == x && cn->nd->y == y) {
             return cn->nd;
         }
-        cn=cn->suiv;
+        cn = cn->suiv;
     }
 
-    //SInon on le crée et on vérifie les mallocs
-    printf("Création d'un nouveau noeud de coordonnées (x:%lf,y:%lf)\n",x,y);
-    CellNoeud *c_n=(CellNoeud*)malloc(sizeof(CellNoeud));
-    if(c_n==NULL){
-        fprintf(stderr,"Erreur lors de l'allocation mémoire de cn dans RechercheCreeeNoeudListe\n");
-        return NULL;
-    }
-    Noeud *n=(Noeud*)malloc(sizeof(Noeud));
-    if(n==NULL){
-        fprintf(stderr,"Erreur lors de l'allocation mémoire de n dans RechercheCreeeNoeudListe\n");
-        return NULL;
-    }
-
-    //On ajoute les valeurs pour le noeud
-    n->x=x;
-    n->y=y;
-    n->num=R->nbNoeuds+1;
+    // Si le noeud n'existe pas, on le crée
+    printf("Création d'un nouveau noeud de coordonnées (x:%lf, y:%lf)\n", x, y);
     
-    //On relie le noeud a la lc et on le nomme
-    c_n->nd=n;
-    c_n->suiv=R->noeuds;
+    // Allocation mémoire pour le noeud
+    Noeud *n = (Noeud*)malloc(sizeof(Noeud));
+    if (n == NULL) {
+        perror("Erreur lors de l'allocation mémoire de n dans RechercheCreeeNoeudListe");
+        return NULL;
+    }
 
-    //On incrémente le nombre de noeud
+    // Initialisation des valeurs pour le noeud
+    n->x = x;
+    n->y = y;
+    n->num = R->nbNoeuds + 1;
+
+    // Allocation mémoire pour la cellule noeud
+    CellNoeud *c_n = (CellNoeud*)malloc(sizeof(CellNoeud));
+    if (c_n == NULL) {
+        perror("Erreur lors de l'allocation mémoire de c_n dans RechercheCreeeNoeudListe");
+        free(n); // Libération de la mémoire allouée pour n
+        return NULL;
+    }
+
+    // Relie le noeud à la liste chaînée de noeuds
+    c_n->nd = n;
+    c_n->suiv = R->noeuds;
+    R->noeuds = c_n;
+
+    // Incrémentation du nombre de noeuds du réseau
     R->nbNoeuds++;
+
     return n;
 }
+
 Reseau* reconstitueReseauListe(Chaines *C) {
     // Vérification de C
     if (C == NULL) {
-        fprintf(stderr, "Erreur de C dans reconstitutionReseauListe");
+        perror("Erreur de C dans reconstitutionReseauListe");
         return NULL;
     }
 
     // Création du réseau
     Reseau *r = (Reseau*)malloc(sizeof(Reseau));
     if (r == NULL) {
-        fprintf(stderr, "Erreur lors de l'allocation mémoire de r dans reconstitutionReseauListe\n");
+        perror("Erreur lors de l'allocation mémoire de r dans reconstitutionReseauListe");
         return NULL;
     }
 
-    // On fixe les attributs du réseau
+    // Initialisation des attributs du réseau
     r->noeuds = NULL;
     r->commodites = NULL;
     r->nbNoeuds = 0;
+    r->gamma = C->gamma;
 
     // Parcours des chaînes
     CellChaine *cellChaines = C->chaines;
     while (cellChaines != NULL) {
-        CellNoeud *c_n = NULL;  // Initialisation de c_n
         CellNoeud *c_n_temp = NULL;
+        CellCommodite *ccom = NULL;
 
         CellPoint *cellPoint = cellChaines->points;
+
         while (cellPoint != NULL) {
-            // On récupère (ou on crée) un noeud
+            // Recherche ou création du noeud
             Noeud *n = rechercheCreeNoeudListe(r, cellPoint->x, cellPoint->y);
 
-            // On alloue la mémoire pour c_n
+            // Allocation mémoire pour la cellule noeud
             CellNoeud *c_n = (CellNoeud*)malloc(sizeof(CellNoeud));
             if (c_n == NULL) {
-                fprintf(stderr, "Erreur lors de l'allocation mémoire de c_n dans reconstitutionReseauListe\n");
+                perror("Erreur lors de l'allocation mémoire de c_n dans reconstitutionReseauListe");
                 return NULL;
             }
 
-            // On ajoute les valeurs pour le noeud
+            // Initialisation des valeurs pour la cellule noeud
             c_n->nd = n;
 
-            // On relie le noeud à la liste chaînée de noeuds
+            // Relier la cellule noeud à la liste chaînée de noeuds
             if (r->noeuds == NULL) {
                 r->noeuds = c_n;
             } else {
                 c_n_temp->suiv = c_n;
             }
             c_n_temp = c_n;
+
+            // Gestion des commodités
+            if (cellPoint == cellChaines->points) {
+                // Cad si c'est le premier point de la chaîne, on crée une nouvelle commodité
+                ccom = (CellCommodite*)malloc(sizeof(CellCommodite));
+                if (ccom == NULL) {
+                    perror("Erreur lors de l'allocation mémoire de ccom dans reconstitutionReseauListe");
+                    return NULL;
+                }
+                ccom->extrA = n;
+                ccom->extrB = NULL;
+
+                //Gestion de la liste chaînee des commodites
+                ccom->suiv = r->commodites;
+                r->commodites = ccom;
+            } else if (cellPoint->suiv == NULL) {
+                // Cad si c'est le dernier point de la chaîne, on met à jour la deuxième extrémité de la commodité
+                if (ccom != NULL) {
+                    ccom->extrB = n;
+                }
+            }
 
             cellPoint = cellPoint->suiv;
         }
@@ -102,6 +136,15 @@ Reseau* reconstitueReseauListe(Chaines *C) {
 
     return r;
 }
+
+int nbLiaisons(Reseau *R){
+    return 0;
+}
+int nbCommodites(Reseau *R){
+    return 0;
+}
+
+
 
 void ecrireReseau(Reseau *R, FILE *f){
     if(R==NULL){
@@ -141,10 +184,4 @@ void afficheReseauSVG(Reseau *R, char* nomInstance){
         courN=courN->suiv;
     }
     SVGfinalize(&svg);
-}
-int nbLiaisons(Reseau *R){
-    return 0;
-}
-int nbCommodites(Reseau *R){
-    return 0;
 }

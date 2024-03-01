@@ -8,6 +8,7 @@ typedef struct cellPoint{
   struct cellPoint *suiv;       /* Cellule suivante dans la liste */
 } CellPoint;
 
+
 /* Celllule d une liste (chainee) de chaines */
 typedef struct cellChaine{
   int numero;                   /* Numero de la chaine */
