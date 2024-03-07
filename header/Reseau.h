@@ -33,6 +33,7 @@ typedef struct {
 
 Noeud* rechercheCreeNoeudListe(Reseau *R, double x, double y);
 Reseau* reconstitueReseauListe(Chaines *C);
+void ajouterVoisins(Noeud *n1,Noeud *n2); //On rajoute cette fonction pour alleger le code
 void ecrireReseau(Reseau *R, FILE *f);
 int nbLiaisons(Reseau *R);
 int nbCommodites(Reseau *R);
