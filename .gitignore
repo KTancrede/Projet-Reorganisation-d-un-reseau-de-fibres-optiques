@@ -1,13 +1,6 @@
 /build/
 
 chaine_main
-
-/texte/
-*.txt
-
-/affichage_web/
-*.html
-
-Reconstitue_Reseau
+reconstitue_Reseau
 
 /.vscode/
