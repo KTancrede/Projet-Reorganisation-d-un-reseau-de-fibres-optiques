@@ -18,6 +18,7 @@ Noeud* rechercheCreeNoeudListe(Reseau *R, double x, double y) {
     CellNoeud *cn = R->noeuds;
     while (cn != NULL) {
         if (cn->nd->x == x && cn->nd->y == y) {
+            //Si le point est deja present à ces coordonnes on return le noeud
             return cn->nd;
         }
         cn = cn->suiv;
@@ -77,39 +78,27 @@ Reseau* reconstitueReseauListe(Chaines *C) {
     r->nbNoeuds = 0;
     r->gamma = C->gamma;
 
-    // Parcours des chaînes
+        // Parcours des chaînes
     CellChaine *cellChaines = C->chaines;
     while (cellChaines != NULL) {
-        CellNoeud *c_n_temp = NULL;
         CellCommodite *ccom = NULL;
+        Noeud *premierNoeud = NULL;  // Pour garder une référence au premier nœud de la chaîne
 
         CellPoint *cellPoint = cellChaines->points;
+        Noeud *noeudPrecedent = NULL;
 
         while (cellPoint != NULL) {
-            // Recherche ou création du noeud
+            // Recherche ou création du nœud
             Noeud *n = rechercheCreeNoeudListe(r, cellPoint->x, cellPoint->y);
 
-            // Allocation mémoire pour la cellule noeud
-            CellNoeud *c_n = (CellNoeud*)malloc(sizeof(CellNoeud));
-            if (c_n == NULL) {
-                perror("Erreur lors de l'allocation mémoire de c_n dans reconstitutionReseauListe");
-                return NULL;
+            // Mémoriser le premier nœud de la chaîne
+            if (premierNoeud == NULL) {
+                premierNoeud = n;
             }
-
-            // Initialisation des valeurs pour la cellule noeud
-            c_n->nd = n;
-
-            // Relier la cellule noeud à la liste chaînée de noeuds
-            if (r->noeuds == NULL) {
-                r->noeuds = c_n;
-            } else {
-                c_n_temp->suiv = c_n;
-            }
-            c_n_temp = c_n;
 
             // Gestion des commodités
             if (cellPoint == cellChaines->points) {
-                // Cad si c'est le premier point de la chaîne, on crée une nouvelle commodité
+                // Si c'est le premier point de la chaîne, créer une nouvelle commodité
                 ccom = (CellCommodite*)malloc(sizeof(CellCommodite));
                 if (ccom == NULL) {
                     perror("Erreur lors de l'allocation mémoire de ccom dans reconstitutionReseauListe");
@@ -118,16 +107,29 @@ Reseau* reconstitueReseauListe(Chaines *C) {
                 ccom->extrA = n;
                 ccom->extrB = NULL;
 
-                //Gestion de la liste chaînee des commodites
+                // Gestion de la liste chaînée des commodités
                 ccom->suiv = r->commodites;
                 r->commodites = ccom;
             } else if (cellPoint->suiv == NULL) {
-                // Cad si c'est le dernier point de la chaîne, on met à jour la deuxième extrémité de la commodité
+                // Si c'est le dernier point de la chaîne, mettre à jour la deuxième extrémité de la commodité
                 if (ccom != NULL) {
                     ccom->extrB = n;
                 }
             }
 
+            // Ajout du nœud actuel à la liste des voisins du nœud précédent (si ce n'est pas le premier nœud)
+            if (noeudPrecedent != NULL) {
+                CellNoeud *c_n_voisin = (CellNoeud*)malloc(sizeof(CellNoeud));
+                if (c_n_voisin == NULL) {
+                    perror("Erreur lors de l'allocation mémoire de c_n_voisin dans reconstitutionReseauListe");
+                    return NULL;
+                }
+                c_n_voisin->nd = n;
+                c_n_voisin->suiv = noeudPrecedent->voisins;
+                noeudPrecedent->voisins = c_n_voisin;
+            }
+
+            noeudPrecedent = n;
             cellPoint = cellPoint->suiv;
         }
 
@@ -136,18 +138,19 @@ Reseau* reconstitueReseauListe(Chaines *C) {
 
     return r;
 }
-/*
+
+
 // Cette fonction permet de compte le nombre de liaison dans un réseau
 int nbLiaisons(Reseau *R){
     if(R==NULL){
         perror("Erreur dans nbLiaisons de R");
         return -1;
     }
-    R->
+    //R->
         
     return 0;
 }
-*/
+
 
 // Cette fonction permet de compter le nombre de commodites dans un réseau 
 int nbCommodites(Reseau *R){
@@ -162,6 +165,7 @@ int nbCommodites(Reseau *R){
     while (ccom)
     {
         compteur++;
+        ccom=ccom->suiv;
     }
     return compteur;
 }
@@ -177,7 +181,39 @@ void ecrireReseau(Reseau *R, FILE *f){
         fprintf(stderr,"Erreur de fichier dans ecrire réseau");
         return;
     }
-    
+    fprintf(f,"NbNoeuds: %d\n",R->nbNoeuds);
+    fprintf(f,"NbLiaisons: %d\n",nbLiaisons(R));
+    fprintf(f,"NbCommodites: %d\n",nbCommodites(R));
+    fprintf(f,"Gamma: %d\n\n",R->gamma);
+
+    // Écrire les coordonnées de chaque nœud
+    CellNoeud *c_n = R->noeuds;
+    while (c_n != NULL) {
+        fprintf(f, "v %d %.6lf %.6lf\n", c_n->nd->num, c_n->nd->x, c_n->nd->y);
+        c_n = c_n->suiv;
+    }
+
+    fprintf(f, "\n");
+
+    // Écrire les liaisons entre les nœuds
+    CellNoeud *c_n_voisins = R->noeuds;
+    while (c_n_voisins != NULL) {
+        CellNoeud *c_n_voisin = c_n_voisins->nd->voisins;
+        while (c_n_voisin != NULL) {
+            fprintf(f, "l %d %d\n", c_n_voisins->nd->num, c_n_voisin->nd->num);
+            c_n_voisin = c_n_voisin->suiv;
+        }
+        c_n_voisins = c_n_voisins->suiv;
+    }
+
+    fprintf(f, "\n");
+
+    // Écrire les commodités
+    CellCommodite *ccom = R->commodites;
+    while (ccom != NULL) {
+        fprintf(f, "k %d %d\n", ccom->extrA->num, ccom->extrB->num);
+        ccom = ccom->suiv;
+    }
 }
 
 void afficheReseauSVG(Reseau *R, char* nomInstance){
