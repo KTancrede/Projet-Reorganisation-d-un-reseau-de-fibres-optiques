@@ -2,7 +2,12 @@
 
 chaine_main
 
+/texte/
 *.txt
+
+/affichage_web/
 *.html
 
 Reconstitue_Reseau
+
+/.vscode/
