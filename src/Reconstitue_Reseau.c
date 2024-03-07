@@ -6,5 +6,11 @@
 #include <string.h>
 
 int main(int argc,char ** argv){
+    FILE *f=fopen("Ressources/00014_burma.cha","r");
+    Chaines *c=lectureChaines(f);
+    Reseau *r= reconstitueReseauListe(c);
     
+    FILE *ff=fopen("texte/test_reseau.txt","w");
+    ecrireReseau(r,ff);
+    afficheReseauSVG(r,"test_reseau");
 }
