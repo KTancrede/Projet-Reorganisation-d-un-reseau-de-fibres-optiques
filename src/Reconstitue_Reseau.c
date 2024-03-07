@@ -12,5 +12,5 @@ int main(int argc,char ** argv){
     
     FILE *ff=fopen("texte/test_reseau.txt","w");
     ecrireReseau(r,ff);
-    afficheReseauSVG(r,"test_reseau");
+    afficheReseauSVG(r,"affichage_web/test_reseau");
 }
