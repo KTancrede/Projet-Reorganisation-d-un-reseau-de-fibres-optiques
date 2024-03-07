@@ -34,4 +34,4 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 clean:
-	rm -rf $(BUILD_DIR) $(PROGRAMS) *.html
+	rm -rf $(BUILD_DIR) $(PROGRAMS) *.html *.txt
