@@ -4,6 +4,7 @@
 Le projet se présente sous la forme suivante. Les fichiers compilés sont dans le fichier ```/build/``` qui s'obtient après avoir fait ```make```. Les fichiers ```.h``` sont dans header et les ```.c``` dans src. 
 
 Nous avons, afin d'organiser au mieux le projet, crée ```/affichage_web/``` et ```/texte/``` dans lesquelles nous retrouvons les fichier ```.html``` et ```.txt``` générés au fur et à mesure du projet.
+
 La commande ```make clean``` permet d'effacer tous les exécutables ainsi que les ```.html``` et ```.txt```
 
 ```
