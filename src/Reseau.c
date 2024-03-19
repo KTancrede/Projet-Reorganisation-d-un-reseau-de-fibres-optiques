@@ -35,6 +35,7 @@ Noeud* rechercheCreeNoeudListe(Reseau *R, double x, double y) {
     }
 
     // Initialisation des valeurs pour le noeud
+    n->voisins=NULL;
     n->x = x;
     n->y = y;
     n->num = R->nbNoeuds + 1;
@@ -57,28 +58,27 @@ Noeud* rechercheCreeNoeudListe(Reseau *R, double x, double y) {
 
     return n;
 }
-
-void ajouterVoisins(Noeud *n1,Noeud *n2){
-    if(n1==NULL && n2==NULL){
+//On veut ajouter n1 à n2
+void ajouterVoisins(Noeud *n1, Noeud *n2) {
+    if (n1 == NULL || n2 == NULL) {
         perror("Erreur dans ajouterVoisins de paramètres\n");
+        return;
     }
 
-    CellNoeud *voisins1=(CellNoeud*)malloc(sizeof(CellNoeud));
-    CellNoeud *voisins2=(CellNoeud*)malloc(sizeof(CellNoeud));
-    if(voisins1==NULL && voisins2==NULL){
-        perror("Erreur dans les mallocs des CellNoeud voisins dans ajouterVoisins\n");
+    // Allocation mémoire pour la nouvelle cellule de voisin
+    CellNoeud *c_n_voisins = (CellNoeud*)malloc(sizeof(CellNoeud));
+    if (c_n_voisins == NULL) {
+        perror("Erreur lors de l'allocation mémoire de c_n_voisins dans ajouterVoisins");
+        return;
     }
 
-    voisins1->nd=n1;
-    voisins1->suiv=n1->voisins;
-    n1->voisins=voisins1;
-
-    voisins2->nd=n2;
-    voisins2->suiv=n2->voisins;
-    n2->voisins=voisins2;
+    c_n_voisins->nd = n2;
+    c_n_voisins->suiv = n1->voisins;
+    n1->voisins = c_n_voisins;
 }
 
-//Cette fonction permet de reconstituer un réseau à partir des chaînes
+
+// Cette fonction permet de reconstituer un réseau à partir des chaînes
 Reseau* reconstitueReseauListe(Chaines *C) {
     // Vérification de C
     if (C == NULL) {
@@ -110,7 +110,8 @@ Reseau* reconstitueReseauListe(Chaines *C) {
 
         while (cellPoint != NULL) {
             // Recherche ou création du nœud
-            Noeud *n = rechercheCreeNoeudListe(r, cellPoint->x, cellPoint->y);
+            Noeud *n = NULL;
+            n = rechercheCreeNoeudListe(r, cellPoint->x, cellPoint->y);
 
             // Mémoriser le premier nœud de la chaîne
             if (premierNoeud == NULL) {
@@ -147,6 +148,11 @@ Reseau* reconstitueReseauListe(Chaines *C) {
             cellPoint = cellPoint->suiv;
         }
 
+        // Relie le dernier nœud de la chaîne au premier nœud de la chaîne suivante
+        if (premierNoeud != NULL && noeudPrecedent != NULL) {
+            //ajouterVoisins(noeudPrecedent, premierNoeud);
+        }
+
         cellChaines = cellChaines->suiv;
     }
 
@@ -156,10 +162,11 @@ Reseau* reconstitueReseauListe(Chaines *C) {
 
 
 
+
 // Cette fonction permet de compte le nombre de liaison dans un réseau
 int nbLiaisons(Reseau *R){
     if(R==NULL){
-        perror("Erreur dans nbLiaisons de R");
+        perror("Erreur dans nbLiaisons de R\n");
         return -1;
     }
     int compteur=0;
@@ -220,17 +227,19 @@ void ecrireReseau(Reseau *R, FILE *f){
     fprintf(f, "\n");
 
     // Écrire les liaisons entre les nœuds
-    CellNoeud *c_n_voisins = R->noeuds;
-    while (c_n_voisins != NULL) {
-        CellNoeud *c_n_voisin = c_n_voisins->nd->voisins;
+    CellNoeud *c_n_voisin1 = R->noeuds;
+    while (c_n_voisin1 != NULL) {
+        
+        CellNoeud *c_n_voisin = c_n_voisin1->nd->voisins;
         while (c_n_voisin != NULL) {
+            //printf("%d %d\n",c_n_voisin1->nd->num ,c_n_voisin->nd->num);
             // ICI on empeche qu'une liaisons soit ecrites plusieurs fois en verifiant le num
-            if (c_n_voisins->nd->num < c_n_voisin->nd->num) {
-                fprintf(f, "l %d %d\n", c_n_voisins->nd->num, c_n_voisin->nd->num);
+            if (c_n_voisin1->nd->num < c_n_voisin->nd->num) {   
+                fprintf(f, "l %d %d\n", c_n_voisin1->nd->num, c_n_voisin->nd->num);
             }
             c_n_voisin = c_n_voisin->suiv;
         }
-        c_n_voisins = c_n_voisins->suiv;
+        c_n_voisin1 = c_n_voisin1->suiv;
     }
 
     fprintf(f, "\n");
