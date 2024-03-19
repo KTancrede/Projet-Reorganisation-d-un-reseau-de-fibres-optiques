@@ -65,17 +65,35 @@ void ajouterVoisins(Noeud *n1, Noeud *n2) {
         return;
     }
 
+    // Vérifier si n2 est déjà dans la liste des voisins de n1
+    CellNoeud *c_n_voisins = n1->voisins;
+    while (c_n_voisins != NULL) {
+        if (c_n_voisins->nd == n2) {
+            // Si n2 est déjà un voisin de n1, ne rien faire
+            return;
+        }
+        c_n_voisins = c_n_voisins->suiv;
+    }
+
     // Allocation mémoire pour la nouvelle cellule de voisin
-    CellNoeud *c_n_voisins = (CellNoeud*)malloc(sizeof(CellNoeud));
-    if (c_n_voisins == NULL) {
-        perror("Erreur lors de l'allocation mémoire de c_n_voisins dans ajouterVoisins");
+    CellNoeud *nouveau_voisin1 = (CellNoeud*)malloc(sizeof(CellNoeud));
+    CellNoeud *nouveau_voisin2 = (CellNoeud*)malloc(sizeof(CellNoeud));
+    if (nouveau_voisin1 == NULL || nouveau_voisin2 == NULL) {
+        perror("Erreur lors de l'allocation mémoire de nouveau_voisin dans ajouterVoisins");
         return;
     }
 
-    c_n_voisins->nd = n2;
-    c_n_voisins->suiv = n1->voisins;
-    n1->voisins = c_n_voisins;
+    // Assigner le nœud n2 à la nouvelle cellule de voisin pour n1
+    nouveau_voisin1->nd = n2;
+    nouveau_voisin1->suiv = n1->voisins;
+    n1->voisins = nouveau_voisin1;
+
+    // Assigner le nœud n1 à la nouvelle cellule de voisin pour n2
+    nouveau_voisin2->nd = n1;
+    nouveau_voisin2->suiv = n2->voisins;
+    n2->voisins = nouveau_voisin2;
 }
+
 
 
 // Cette fonction permet de reconstituer un réseau à partir des chaînes
@@ -160,7 +178,30 @@ Reseau* reconstitueReseauListe(Chaines *C) {
 }
 
 
+void afficher_voisin(Reseau *R) {
+    if (R == NULL) {
+        printf("Le réseau est vide.\n");
+        return;
+    }
 
+    printf("Voisins de chaque nœud :\n");
+
+    // Parcours de chaque nœud
+    CellNoeud *courant_noeud = R->noeuds;
+    while (courant_noeud != NULL) {
+        printf("Noeud %d : ", courant_noeud->nd->num);
+
+        // Parcours des voisins du nœud courant
+        CellNoeud *courant_voisin = courant_noeud->nd->voisins;
+        while (courant_voisin != NULL) {
+            printf("%d ", courant_voisin->nd->num);
+            courant_voisin = courant_voisin->suiv;
+        }
+
+        printf("\n");
+        courant_noeud = courant_noeud->suiv;
+    }
+}
 
 
 // Cette fonction permet de compte le nombre de liaison dans un réseau
