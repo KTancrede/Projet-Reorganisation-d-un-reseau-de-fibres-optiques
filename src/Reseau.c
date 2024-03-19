@@ -320,3 +320,41 @@ void afficheReseauSVG(Reseau *R, char* nomInstance){
     }
     SVGfinalize(&svg);
 }
+
+void liberer_commodite(CellCommodite *liste_commodite) {
+    CellCommodite *courant_commodite = liste_commodite;
+    while (courant_commodite != NULL) {
+        CellCommodite *suivant_commodite = courant_commodite->suiv;
+        free(courant_commodite);
+        courant_commodite = suivant_commodite;
+    }
+}
+
+void liberer_noeud(Noeud *n){
+    if(n == NULL) {
+        return;
+    }
+    CellNoeud *courant = n->voisins;
+    while (courant != NULL) {
+        CellNoeud *suivant = courant->suiv;
+        free(courant);
+        courant = suivant;
+    }
+    free(n);
+}
+
+void liberer_reseau(Reseau *R){
+    if(R == NULL) {
+        return; 
+    }
+    liberer_commodite(R->commodites);
+
+    CellNoeud *courant_noeud = R->noeuds;
+    while (courant_noeud != NULL) {
+        CellNoeud *suivant_noeud = courant_noeud->suiv;
+        liberer_noeud(courant_noeud->nd); 
+        free(courant_noeud);
+        courant_noeud = suivant_noeud;
+    }
+    free(R);
+}
