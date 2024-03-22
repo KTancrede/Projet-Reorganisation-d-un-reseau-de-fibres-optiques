@@ -7,7 +7,7 @@
 #include "../header/Hachage.h"
 #include "../header/Chaine.h"
 
-#define M 42
+int M=150;
 
 int fonction_hach(int k){
     float A=(sqrt(5)-1)/2;
@@ -30,7 +30,6 @@ TableHachage *creationTable(int taille){
         return NULL;
     }
 
-    // Initialiser toutes les entrées du tableau à NULL
     for(int i = 0; i < TH->tailleMax; i++){
         TH->T[i] = NULL;
     }
@@ -145,6 +144,8 @@ Reseau* reconstitueReseauHachage(Chaines *C,int m) {
     r->nbNoeuds = 0;
     r->gamma = C->gamma;
 
+    TableHachage *TH=creationTable(m);
+
     // Parcours des chaînes
     CellChaine *cellChaines = C->chaines;
     while (cellChaines != NULL) {
@@ -157,7 +158,7 @@ Reseau* reconstitueReseauHachage(Chaines *C,int m) {
         while (cellPoint != NULL) {
             // Recherche ou création du nœud
             Noeud *n = NULL;
-            TableHachage *TH=creationTable(m);
+            
             n = rechercheCreeNoeudHachage(r,TH, cellPoint->x, cellPoint->y);
 
             // Mémoriser le premier nœud de la chaîne
@@ -202,6 +203,21 @@ Reseau* reconstitueReseauHachage(Chaines *C,int m) {
 
         cellChaines = cellChaines->suiv;
     }
-
+    afficher_table(TH);
     return r;
+}
+
+void afficher_table(TableHachage *TH){
+    if(TH==NULL){
+        perror("TableHachage non définie dans afficher_table\n");
+    }
+    for(int i=0;i<TH->tailleMax;i++){
+        printf("Index %d: ",i);
+        CellNoeud *cour=TH->T[i];
+        while(cour){
+            printf("%d ",cour->nd->num);
+            cour=cour->suiv;
+        }
+        printf("\n");
+    }
 }

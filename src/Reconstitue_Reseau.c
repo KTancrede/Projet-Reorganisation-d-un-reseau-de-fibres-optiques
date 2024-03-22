@@ -7,12 +7,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 int main(int argc,char ** argv){
     FILE *f=fopen("Ressources/00014_burma.cha","r");
-    
+    //FILE *f=fopen("Ressources/TESTS/USA-road-d.NY.co","r");
     Chaines *c=lectureChaines(f);
-
-    Reseau *RH=reconstitueReseauHachage(c,42);
+    
+    Reseau *RH=reconstitueReseauHachage(c,M);
     Reseau *RL= reconstitueReseauListe(c);
     
     FILE *ff=fopen("texte/test_reseau.txt","w");

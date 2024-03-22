@@ -25,7 +25,7 @@ Noeud* rechercheCreeNoeudListe(Reseau *R, double x, double y) {
     }
 
     // Si le noeud n'existe pas, on le crée
-    printf("Création d'un nouveau noeud de coordonnées (x:%lf, y:%lf)\n", x, y);
+    //printf("Création d'un nouveau noeud de coordonnées (x:%lf, y:%lf)\n", x, y);
     
     // Allocation mémoire pour le noeud
     Noeud *n = (Noeud*)malloc(sizeof(Noeud));
