@@ -16,14 +16,28 @@ int fonction_hach(int k){
 }
 
 TableHachage *creationTable(int taille){
-    TableHachage *TH=(TableHachage*)malloc(sizeof(TableHachage));
-    TH->tailleMax=taille;
-    TH->T=(CellNoeud**)malloc(sizeof(CellNoeud*));
-    for(int i=0;i<TH->tailleMax;i++){
-        TH->T[i]=NULL;
+    TableHachage *TH = (TableHachage*)malloc(sizeof(TableHachage));
+    if (TH == NULL) {
+        perror("Erreur lors de l'allocation de mémoire pour la table de hachage");
+        return NULL;
     }
+
+    TH->tailleMax = taille;
+    TH->T = (CellNoeud**)malloc(sizeof(CellNoeud*) * taille);
+    if (TH->T == NULL) {
+        perror("Erreur lors de l'allocation de mémoire pour le tableau de hachage");
+        free(TH); // Libérer la mémoire allouée pour TH
+        return NULL;
+    }
+
+    // Initialiser toutes les entrées du tableau à NULL
+    for(int i = 0; i < TH->tailleMax; i++){
+        TH->T[i] = NULL;
+    }
+    
     return TH;
 }
+
 
 
 Noeud *rechercheCreeNoeudHachage(Reseau *R,TableHachage *TH,double x,double y){
