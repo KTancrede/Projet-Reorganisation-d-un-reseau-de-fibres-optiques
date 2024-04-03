@@ -67,11 +67,11 @@ ArbreQuat *creerArbreQuat(double xc, double yc, double coteX,double coteY){
 char* ou_inserer(Noeud* n,ArbreQuat *parent){
     if(n==NULL){
         perror("n null dans ou_inserer\n");
-        return;
+        return NULL;
     }
     if(parent==NULL){
         perror("parent null dans ou_inserer\n");
-        return;
+        return NULL;
     }
     if (parent->se->xc > n->x) {
         if (parent->se->yc > n->y) {
@@ -120,6 +120,10 @@ void insererNoeudArbre(Noeud* n, ArbreQuat** a, ArbreQuat *parent){
             perror("loc invalide\n");
             return;
         }      
+
+        // Création de l'arbre
+        *a = creerArbreQuat(new_xc, new_yc, moitie_coteX, moitie_coteY);
+        //insererNoeudArbre(n, a, paent); // Insertion récursive dans le nouvel arbre
     }
     else if ((*a)->noeud != NULL) {
         // Sauvegarde de l'ancien noeud
@@ -134,20 +138,20 @@ void insererNoeudArbre(Noeud* n, ArbreQuat** a, ArbreQuat *parent){
     else {
         // Insertion récursive dans la cellule appropriée en fonction des coordonnées du nœud
         char* quadrant = ou_inserer(n, *a);
-        ArbreQuat** child_tree = NULL;
+        ArbreQuat** enfant = NULL;
         if (strcmp(quadrant, "so") == 0) {
-            child_tree = &((*a)->so);
+            enfant = &((*a)->so);
         } else if (strcmp(quadrant, "se") == 0) {
-            child_tree = &((*a)->se);
+            enfant = &((*a)->se);
         } else if (strcmp(quadrant, "no") == 0) {
-            child_tree = &((*a)->no);
+            enfant = &((*a)->no);
         } else if (strcmp(quadrant, "ne") == 0) {
-            child_tree = &((*a)->ne);
+            enfant = &((*a)->ne);
         } else {
             perror("Quadrant invalide\n");
             return;
         }
-        insererNoeudArbre(n, child_tree, *a);
+        insererNoeudArbre(n, enfant, *a);
     }
 
 }
