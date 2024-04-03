@@ -2,6 +2,8 @@
 #include "../header/SVGwriter.h"
 #include "../header/Reseau.h"
 #include "../header/Hachage.h"
+#include "../header/ArbreQuat.h"
+
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,5 +1,5 @@
 # Projet : Réorganisation d’un réseau de fibres optiques
-## Réalisé par Tancrède KOWAL (28606347) et Nassim
+## Réalisé par Tancrède KOWAL (28606347) et Nassim Hamida()
 
 Le projet se présente sous la forme suivante. Les fichiers compilés sont dans le fichier ```/build/``` qui s'obtient après avoir fait ```make```. Les fichiers ```.h``` sont dans header et les ```.c``` dans src. 
 
