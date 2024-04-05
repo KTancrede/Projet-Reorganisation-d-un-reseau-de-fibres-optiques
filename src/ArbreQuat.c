@@ -127,10 +127,10 @@ void insererNoeudArbre(Noeud* n, ArbreQuat** a, ArbreQuat *parent){
     }
     else if ((*a)->noeud != NULL) {
         // Sauvegarde de l'ancien noeud
-        Noeud* old_node = (*a)->noeud;
+        Noeud* old_noeud = (*a)->noeud;
         // Insertion récursive du nœud actuel et de l'ancien nœud
         insererNoeudArbre(n, a, parent);
-        insererNoeudArbre(old_node, a, parent);
+        insererNoeudArbre(old_noeud, a, parent);
         // Mise à jour du noeud de la feuille
         (*a)->noeud = NULL;
     } 
@@ -155,3 +155,60 @@ void insererNoeudArbre(Noeud* n, ArbreQuat** a, ArbreQuat *parent){
     }
 
 }
+
+Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent, double x, double y) {
+    // Cas d'un arbre vide
+    if (*a == NULL) {
+        // Création du nœud correspondant au point et insertion dans le réseau et l'arbre
+        Noeud* new_node = (Noeud*)malloc(sizeof(Noeud));
+        if (new_node == NULL) {
+            perror("Erreur lors de l'allocation de mémoire pour le nouveau nœud\n");
+            return NULL;
+        }
+        new_node->x = x;
+        new_node->y = y;
+        insererNoeudReseau(R, new_node);
+        insererNoeudArbre(new_node, a, parent);
+        return new_node;
+    } 
+    // Cas d'une feuille
+    else if ((*a)->noeud != NULL) {
+        // Vérification si le nœud recherché correspond au nœud de la feuille
+        if ((*a)->noeud->x == x && (*a)->noeud->y == y) {
+            return (*a)->noeud;
+        } else {
+            // Création du nœud correspondant au point et insertion dans le réseau et l'arbre
+            Noeud* new_node = (Noeud*)malloc(sizeof(Noeud));
+            if (new_node == NULL) {
+                perror("Erreur lors de l'allocation de mémoire pour le nouveau nœud\n");
+                return NULL;
+            }
+            new_node->x = x;
+            new_node->y = y;
+            insererNoeudReseau(R, new_node);
+            insererNoeudArbre(new_node, a, parent);
+            return new_node;
+        }
+    } 
+    // Cas d'une cellule interne
+    else {
+        // Détermination de la cellule de l'arbre dans laquelle chercher le nœud
+        char* quadrant = ou_inserer(creerNoeud(x, y), *a);
+        ArbreQuat** child_tree = NULL;
+        if (strcmp(quadrant, "so") == 0) {
+            child_tree = &((*a)->so);
+        } else if (strcmp(quadrant, "se") == 0) {
+            child_tree = &((*a)->se);
+        } else if (strcmp(quadrant, "no") == 0) {
+            child_tree = &((*a)->no);
+        } else if (strcmp(quadrant, "ne") == 0) {
+            child_tree = &((*a)->ne);
+        } else {
+            perror("Quadrant invalide\n");
+            return NULL;
+        }
+        // Recherche récursive dans la cellule de l'arbre correspondante
+        return rechercheCreeNoeudArbre(R, child_tree, *a, x, y);
+    }
+}
+
