@@ -40,5 +40,6 @@ int nbCommodites(Reseau *R);
 void afficheReseauSVG(Reseau *R, char* nomInstance);
 void liberer_reseau(Reseau *R);
 void afficher_voisin(Reseau *R);
+void liberer_noeud(Noeud *n);
 #endif
 

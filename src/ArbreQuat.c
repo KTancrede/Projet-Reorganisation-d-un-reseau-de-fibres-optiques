@@ -38,7 +38,7 @@ void chaineCoordMinMax(Chaines *C, double *xmin, double *ymin, double *xmax, dou
         cc = cc->suiv;
     }
 }
-
+/*
 ArbreQuat *creerArbreQuat(double xc, double yc, double coteX,double coteY){
     ArbreQuat *AQ=(ArbreQuat *)malloc(sizeof(ArbreQuat));
     AQ->xc=xc;
@@ -64,29 +64,44 @@ ArbreQuat *creerArbreQuat(double xc, double yc, double coteX,double coteY){
 
     return AQ;
 }
-char* ou_inserer(Noeud* n,ArbreQuat *parent){
-    if(n==NULL){
-        perror("n null dans ou_inserer\n");
+*/
+ArbreQuat *creerArbreQuat(double xc, double yc, double coteX, double coteY) {
+    ArbreQuat *AQ = (ArbreQuat *)malloc(sizeof(ArbreQuat));
+    if (AQ == NULL) {
+        perror("Erreur lors de l'allocation de mémoire pour l'arbre quaternaire\n");
         return NULL;
     }
-    if(parent==NULL){
-        perror("parent null dans ou_inserer\n");
+
+    AQ->xc = xc;
+    AQ->yc = yc;
+    AQ->coteX = coteX;
+    AQ->coteY = coteY;
+    AQ->noeud = NULL;
+    AQ->so = NULL;
+    AQ->se = NULL;
+    AQ->no = NULL;
+    AQ->ne = NULL;
+
+    return AQ;
+}
+char* ou_inserer(Noeud* n, ArbreQuat *parent) {
+    if (n == NULL || parent == NULL) {
+        perror("Erreur : Paramètres n ou parent nuls dans ou_inserer\n");
         return NULL;
     }
-    if (parent->se->xc > n->x) {
-        if (parent->se->yc > n->y) {
-            return "so";
-        } else {
-            return "no";
-        }
+
+    if (parent->so != NULL && parent->so->xc <= n->x && parent->so->yc <= n->y) {
+        return "so";
+    } else if (parent->se != NULL && parent->se->xc > n->x && parent->se->yc <= n->y) {
+        return "se";
+    } else if (parent->no != NULL && parent->no->xc <= n->x && parent->no->yc > n->y) {
+        return "no";
+    } else if (parent->ne != NULL && parent->ne->xc > n->x && parent->ne->yc > n->y) {
+        return "ne";
     } else {
-        if (parent->se->yc > n->y) {
-            return "se";
-        } else {
-            return "ne";
-        }
+        perror("Erreur : Impossible de déterminer le quadrant dans ou_inserer\n");
+        return NULL;
     }
-    
 }
 void insererNoeudArbre(Noeud* n, ArbreQuat** a, ArbreQuat *parent){
     if(n==NULL){
@@ -167,8 +182,7 @@ Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent, doub
         }
         new_node->x = x;
         new_node->y = y;
-        insererNoeudReseau(R, new_node);
-        insererNoeudArbre(new_node, a, parent);
+        insererNoeudArbre(new_node, a, parent); // Insertion du nœud dans l'arbre
         return new_node;
     } 
     // Cas d'une feuille
@@ -185,15 +199,27 @@ Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent, doub
             }
             new_node->x = x;
             new_node->y = y;
-            insererNoeudReseau(R, new_node);
-            insererNoeudArbre(new_node, a, parent);
+            insererNoeudArbre(new_node, a, parent); // Insertion du nœud dans l'arbre
             return new_node;
         }
     } 
     // Cas d'une cellule interne
     else {
         // Détermination de la cellule de l'arbre dans laquelle chercher le nœud
-        char* quadrant = ou_inserer(creerNoeud(x, y), *a);
+        Noeud* nouveauNoeud = (Noeud*)malloc(sizeof(Noeud));
+        if (nouveauNoeud == NULL) {
+            perror("Erreur lors de l'allocation de mémoire pour le nouveau nœud\n");
+            return NULL;
+        }
+        nouveauNoeud->x = x;
+        nouveauNoeud->y = y;
+
+        char* quadrant = ou_inserer(nouveauNoeud, *a);
+        if (quadrant == NULL) {
+            perror("Erreur lors de l'insertion du nouveau nœud\n");
+            free(nouveauNoeud); // Libération de la mémoire allouée
+            return NULL;
+        }
         ArbreQuat** child_tree = NULL;
         if (strcmp(quadrant, "so") == 0) {
             child_tree = &((*a)->so);
@@ -212,3 +238,82 @@ Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat* parent, doub
     }
 }
 
+Reseau* reconstitueReseauArbre(Chaines *C) {
+    if (C == NULL) {
+        fprintf(stderr, "Erreur : Chaîne de caractères nulle dans reconstitueReseauArbre\n");
+        return NULL;
+    }
+
+    // Détermination des coordonnées minimales et maximales de la chaîne
+    double xmin, ymin, xmax, ymax;
+    chaineCoordMinMax(C, &xmin, &ymin, &xmax, &ymax);
+
+    // Calcul du centre et de la longueur/hauteur de l'arbre
+    double xc = (xmin + xmax) / 2.0;
+    double yc = (ymin + ymax) / 2.0;
+    double coteX = xmax - xmin;
+    double coteY = ymax - ymin;
+
+    // Création de l'arbre quaternaire
+    ArbreQuat* arbre = creerArbreQuat(xc, yc, coteX, coteY);
+    if (arbre == NULL) {
+        fprintf(stderr, "Erreur : Échec de création de l'arbre quaternaire\n");
+        return NULL;
+    }
+
+    // Création du réseau
+    Reseau* reseau = (Reseau*)malloc(sizeof(Reseau));
+    if (reseau == NULL) {
+        fprintf(stderr, "Erreur : Échec de création du réseau\n");
+        libererArbreQuat(arbre); // Libération de la mémoire de l'arbre en cas d'échec
+        return NULL;
+    }
+
+    // Initialisation des attributs du réseau
+    reseau->noeuds = NULL;
+    reseau->commodites = NULL;
+    reseau->nbNoeuds = 0;
+    reseau->gamma = C->gamma;
+
+    // Parcours des chaînes pour insérer les nœuds dans l'arbre et le réseau
+    CellChaine* cellChaine = C->chaines;
+    while (cellChaine != NULL) {
+        CellPoint* cellPoint = cellChaine->points;
+        while (cellPoint != NULL) {
+            double x = cellPoint->x;
+            double y = cellPoint->y;
+            // Recherche ou création du nœud dans l'arbre et le réseau
+            Noeud* noeud = rechercheCreeNoeudArbre(reseau, &arbre, arbre, x, y);
+            if (noeud == NULL) {
+                fprintf(stderr, "Erreur : Échec de recherche ou création du nœud\n");
+                libererArbreQuat(arbre); // Libération de la mémoire de l'arbre en cas d'échec
+                free(reseau); // Libération de la mémoire du réseau en cas d'échec
+                return NULL;
+            }
+            // Passage au point suivant dans la chaîne
+            cellPoint = cellPoint->suiv;
+        }
+        // Passage à la chaîne suivante
+        cellChaine = cellChaine->suiv;
+    }
+    libererArbreQuat(arbre);
+    // Retour du réseau créé
+    return reseau;
+}
+
+
+void libererArbreQuat(ArbreQuat* a) {
+    if (a == NULL) {
+        return;
+    }
+
+    // Libérer les enfants de manière récursive
+    libererArbreQuat(a->so);
+    libererArbreQuat(a->se);
+    libererArbreQuat(a->no);
+    libererArbreQuat(a->ne);
+
+    free(a->noeud);
+    // Libérer la cellule actuelle
+    free(a);
+}

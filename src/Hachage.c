@@ -203,7 +203,9 @@ Reseau* reconstitueReseauHachage(Chaines *C,int m) {
 
         cellChaines = cellChaines->suiv;
     }
-    afficher_table(TH);
+    
+    //afficher_table(TH);
+    libererTableHachage(TH);
     return r;
 }
 
@@ -221,3 +223,26 @@ void afficher_table(TableHachage *TH){
         printf("\n");
     }
 }
+
+void libererTableHachage(TableHachage *table) {
+    if (table == NULL) {
+        return;
+    }
+
+    // Libérer chaque cellule de la table
+    for (int i = 0; i < table->tailleMax; ++i) {
+        CellNoeud *currentCell = table->T[i];
+        while (currentCell != NULL) {
+            CellNoeud *temp = currentCell;
+            currentCell = currentCell->suiv;
+            free(temp); // Libérer la cellule
+        }
+    }
+
+    // Libérer le tableau lui-même
+    free(table->T);
+    
+    // Libérer la structure de la table
+    free(table);
+}
+

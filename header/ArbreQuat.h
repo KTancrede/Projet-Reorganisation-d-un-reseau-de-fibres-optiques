@@ -21,4 +21,6 @@ ArbreQuat *creerArbreQuat(double xc, double yc, double coteX,double coteY);
 void insererNoeudArbre(Noeud* n, ArbreQuat** a, ArbreQuat *parent);
 char* ou_inserer(Noeud* n,ArbreQuat *parent);
 Noeud* rechercheCreeNoeudArbre(Reseau* R, ArbreQuat** a, ArbreQuat*parent, double x, double y);
+Reseau* reconstitueReseauArbre(Chaines *C);
+void libererArbreQuat(ArbreQuat* a);
 #endif

@@ -17,17 +17,22 @@ int main(int argc,char ** argv){
     
     Reseau *RH=reconstitueReseauHachage(c,M);
     Reseau *RL= reconstitueReseauListe(c);
-    
+    Reseau *RA=reconstitueReseauArbre(c);
+
     FILE *ff=fopen("texte/test_reseau.txt","w");
     ecrireReseau(RL,ff);
 
     afficheChainesSVG(c,"affichage_web/test_chaine");
     afficheReseauSVG(RL,"affichage_web/test_reseau_liste");
     afficheReseauSVG(RH,"affichage_web/test_reseau_hachage");
+    afficheReseauSVG(RA,"affichage_we/test_arbre");
+   
 
     liberer_reseau(RH);
     liberer_reseau(RL);
+    //liberer_reseau(RA);
     liberer_les_chaines(c);
+
 
     fclose(ff);
     fclose(f);
