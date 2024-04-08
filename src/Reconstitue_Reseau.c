@@ -4,13 +4,15 @@
 #include "../header/Hachage.h"
 #include "../header/ArbreQuat.h"
 
-
+#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 
 int main(int argc,char ** argv){
+    mkdir("affichage_web",0777);
+    mkdir("texte",0777);
     FILE *f=fopen("Ressources/00014_burma.cha","r");
     //FILE *f=fopen("Ressources/TESTS/USA-road-d.NY.co","r");
     Chaines *c=lectureChaines(f);
