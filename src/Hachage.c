@@ -157,13 +157,13 @@ Reseau* reconstitueReseauHachage(Chaines *C,int m) {
 
         while (cellPoint != NULL) {
             // Recherche ou création du nœud
-            Noeud *n = NULL;
+            Noeud *noeud = NULL;
             
-            n = rechercheCreeNoeudHachage(r,TH, cellPoint->x, cellPoint->y);
+            noeud = rechercheCreeNoeudHachage(r,TH, cellPoint->x, cellPoint->y);
 
             // Mémoriser le premier nœud de la chaîne
             if (premierNoeud == NULL) {
-                premierNoeud = n;
+                premierNoeud = noeud;
             }
 
             // Gestion des commodités
@@ -174,7 +174,7 @@ Reseau* reconstitueReseauHachage(Chaines *C,int m) {
                     perror("Erreur lors de l'allocation mémoire de ccom dans reconstitutionReseauListe");
                     return NULL;
                 }
-                ccom->extrA = n;
+                ccom->extrA = noeud;
                 ccom->extrB = NULL;
 
                 // Gestion de la liste chaînée des commodités
@@ -183,24 +183,18 @@ Reseau* reconstitueReseauHachage(Chaines *C,int m) {
             } else if (cellPoint->suiv == NULL) {
                 // Si c'est le dernier point de la chaîne, mettre à jour la deuxième extrémité de la commodité
                 if (ccom != NULL) {
-                    ccom->extrB = n;
+                    ccom->extrB = noeud;
                 }
             }
 
             // Ajout du nœud actuel à la liste des voisins du nœud précédent (si ce n'est pas le premier nœud)
             if (noeudPrecedent != NULL) {
-                ajouterVoisins(noeudPrecedent, n);
+                ajouterVoisins(noeudPrecedent, noeud);
             }
 
-            noeudPrecedent = n;
+            noeudPrecedent = noeud;
             cellPoint = cellPoint->suiv;
         }
-
-        // Relie le dernier nœud de la chaîne au premier nœud de la chaîne suivante
-        if (premierNoeud != NULL && noeudPrecedent != NULL) {
-            //ajouterVoisins(noeudPrecedent, premierNoeud);
-        }
-
         cellChaines = cellChaines->suiv;
     }
     
