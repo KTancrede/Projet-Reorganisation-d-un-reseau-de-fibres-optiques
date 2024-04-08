@@ -19,13 +19,13 @@ int main(int argc,char ** argv){
     Reseau *RL= reconstitueReseauListe(c);
     Reseau *RA=reconstitueReseauArbre(c);
 
-    FILE *ff=fopen("texte/test_reseau.txt","w");
-    ecrireReseau(RL,ff);
+    FILE *fa=fopen("texte/test_arbre.txt","w");
+    ecrireReseau(RA,fa);
 
     afficheChainesSVG(c,"affichage_web/test_chaine");
     afficheReseauSVG(RL,"affichage_web/test_reseau_liste");
     afficheReseauSVG(RH,"affichage_web/test_reseau_hachage");
-    afficheReseauSVG(RA,"affichage_we/test_arbre");
+    afficheReseauSVG(RA,"affichage_web/test_arbre");
    
 
     liberer_reseau(RH);
@@ -34,6 +34,6 @@ int main(int argc,char ** argv){
     liberer_les_chaines(c);
 
 
-    fclose(ff);
+    fclose(fa);
     fclose(f);
 }
