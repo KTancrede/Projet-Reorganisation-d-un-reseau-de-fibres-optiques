@@ -181,7 +181,7 @@ void insererNoeudArbre(Noeud *n, ArbreQuat **a, ArbreQuat *parent) {
 }
 
 
-
+/*
 Noeud *rechercheCreeNoeudArbre(Reseau *R, ArbreQuat **a, ArbreQuat *parent, double x, double y) {
     if (*a == NULL) {
         // Si l'arbre est vide, créer un nouveau nœud et l'insérer dans le réseau
@@ -272,7 +272,54 @@ Noeud *rechercheCreeNoeudArbre(Reseau *R, ArbreQuat **a, ArbreQuat *parent, doub
         return rechercheCreeNoeudArbre(R, child_tree, *a, x, y);
     }
 }
+*/
 
+Noeud *rechercheCreeNoeudArbre(Reseau *R, ArbreQuat **a, ArbreQuat *parent, double x, double y) {
+    // Vérifiez si l'arbre est NULL
+    if (*a == NULL) {
+        // Créez un nouvel arbre et insérez le nœud
+        Noeud *n = creerNoeud(x, y);
+        *a = creerArbreQuat(n->x, n->y, parent->coteX / 2, parent->coteY / 2);
+        (*a)->noeud = n;
+        // Mettez à jour le pointeur de l'arbre parent vers le nouvel arbre
+        if (parent != NULL) {
+            if (ou_inserer(n, parent) == "NO") {
+                parent->NO = *a;
+            } else if (ou_inserer(n, parent) == "NE") {
+                parent->NE = *a;
+            } else if (ou_inserer(n, parent) == "SO") {
+                parent->SO = *a;
+            } else if (ou_inserer(n, parent) == "SE") {
+                parent->SE = *a;
+            }
+        }
+        return n;
+    } else if ((*a)->noeud != NULL) {
+        // Si l'arbre est une feuille, vérifiez si le nœud existe déjà
+        if ((*a)->noeud->x == x && (*a)->noeud->y == y) {
+            return (*a)->noeud;
+        } else {
+            // Si le nœud n'existe pas, créez un nouvel arbre pour le nœud existant et le nouveau nœud
+            Noeud *existingNode = (*a)->noeud;
+            Noeud *newNode = creerNoeud(x, y);
+            (*a)->noeud = NULL;
+            insererNoeudArbre(existingNode, a, *a);
+            insererNoeudArbre(newNode, a, *a);
+            return newNode;
+        }
+    } else {
+        // Si l'arbre n'est pas une feuille, descendez dans l'arbre pour insérer ou rechercher le nœud
+        if (ou_inserer(n, *a) == "NO") {
+            return rechercheCreeNoeudArbre(R, &((*a)->NO), *a, x, y);
+        } else if (ou_inserer(n, *a) == "NE") {
+            return rechercheCreeNoeudArbre(R, &((*a)->NE), *a, x, y);
+        } else if (ou_inserer(n, *a) == "SO") {
+            return rechercheCreeNoeudArbre(R, &((*a)->SO), *a, x, y);
+        } else if (ou_inserer(n, *a) == "SE") {
+            return rechercheCreeNoeudArbre(R, &((*a)->SE), *a, x, y);
+        }
+    }
+}
 
 void libererArbreQuat(ArbreQuat *a) {
     if (a == NULL) {
