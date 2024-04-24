@@ -84,7 +84,7 @@ char *ou_inserer(Noeud *n, ArbreQuat *parent) {
         }
     }
 }
-
+/*
 void insererNoeudArbre(Noeud *n, ArbreQuat **a, ArbreQuat *parent) {
     // Vérifie si le nœud et le parent sont valides
     if (n == NULL || parent == NULL) {
@@ -140,7 +140,45 @@ void insererNoeudArbre(Noeud *n, ArbreQuat **a, ArbreQuat *parent) {
     }
     insererNoeudArbre(n, &enfant, *a);
 }
+*/
 
+void insererNoeudArbre(Noeud *n, ArbreQuat **a, ArbreQuat *parent) {
+    // Vérifiez si l'arbre est NULL
+    if (*a == NULL) {
+        // Créez un nouvel arbre et insérez le nœud
+        *a = creerArbreQuat(n->x, n->y, parent->coteX / 2, parent->coteY / 2);
+        (*a)->noeud = n;
+        // Mettez à jour le pointeur de l'arbre parent vers le nouvel arbre
+        if (parent != NULL) {
+            if (ou_inserer(n, parent) == "NO") {
+                parent->NO = *a;
+            } else if (ou_inserer(n, parent) == "NE") {
+                parent->NE = *a;
+            } else if (ou_inserer(n, parent) == "SO") {
+                parent->SO = *a;
+            } else if (ou_inserer(n, parent) == "SE") {
+                parent->SE = *a;
+            }
+        }
+    } else if ((*a)->noeud != NULL) {
+        // Si l'arbre est une feuille, créez un nouvel arbre pour le nœud existant et le nouveau nœud
+        Noeud *existingNode = (*a)->noeud;
+        (*a)->noeud = NULL;
+        insererNoeudArbre(existingNode, a, *a);
+        insererNoeudArbre(n, a, *a);
+    } else {
+        // Si l'arbre n'est pas une feuille, descendez dans l'arbre pour insérer le nœud
+        if (ou_inserer(n, *a) == "NO") {
+            insererNoeudArbre(n, &((*a)->NO), *a);
+        } else if (ou_inserer(n, *a) == "NE") {
+            insererNoeudArbre(n, &((*a)->NE), *a);
+        } else if (ou_inserer(n, *a) == "SO") {
+            insererNoeudArbre(n, &((*a)->SO), *a);
+        } else if (ou_inserer(n, *a) == "SE") {
+            insererNoeudArbre(n, &((*a)->SE), *a);
+        }
+    }
+}
 
 
 
