@@ -18,32 +18,34 @@ int main(int argc,char ** argv){
     Chaines *c=lectureChaines(f);
     afficheChainesSVG(c,"affichage_web/test_chaine");
 
-    /* ARBRE
+    /* ARBRE */
     FILE *fa=fopen("texte/test_arbre.txt","w");
     Reseau *RA=reconstitueReseauArbre(c);
-    afficheReseauSVG(RH,"affichage_web/test_reseau_arbre");
     ecrireReseau(RA,fa);
+    afficheReseauSVG(RA,"affichage_web/test_reseau_arbre");
     liberer_reseau(RA);
     fclose(fa);
-    */
+    
 
-    /* LISTE */
+    
+    /* LISTE 
     FILE *fl=fopen("texte/test_liste.txt","w");
     Reseau *RL= reconstitueReseauListe(c);
     afficheReseauSVG(RL,"affichage_web/test_reseau_liste");
     ecrireReseau(RL,fl);
     liberer_reseau(RL);
     fclose(fl);
-    
+    */
 
-    /* HACHAGE */
+    /* HACHAGE 
     FILE *fh=fopen("texte/test_hachage.txt","w");
     Reseau *RH=reconstitueReseauHachage(c,M);
     afficheReseauSVG(RH,"affichage_web/test_reseau_hachage");
     ecrireReseau(RH,fh);
     liberer_reseau(RH);
     fclose(fh);
-   
+    */
+
     liberer_les_chaines(c);
     fclose(f);
 }

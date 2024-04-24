@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-
 #define EPSILON 0.0001
 
 void chaineCoordMinMax(Chaines *C, double *xmin, double *ymin, double *xmax, double *ymax) {
@@ -65,8 +64,12 @@ ArbreQuat *creerArbreQuat(double xc, double yc, double coteX, double coteY) {
 }
 
 char *ou_inserer(Noeud *n, ArbreQuat *parent) {
-    if (n == NULL || parent == NULL) {
-        fprintf(stderr, "Erreur : Paramètres n ou parent nuls dans ou_inserer\n");
+    if (parent == NULL) {
+        fprintf(stderr, "Erreur : Paramètre parent nul dans ou_inserer\n");
+        return NULL;
+    }
+    if (n == NULL) {
+        fprintf(stderr, "Erreur : Paramètre n nul dans ou_inserer\n");
         return NULL;
     }
 
@@ -84,7 +87,7 @@ char *ou_inserer(Noeud *n, ArbreQuat *parent) {
         }
     }
 }
-/*
+
 void insererNoeudArbre(Noeud *n, ArbreQuat **a, ArbreQuat *parent) {
     // Vérifie si le nœud et le parent sont valides
     if (n == NULL || parent == NULL) {
@@ -140,49 +143,7 @@ void insererNoeudArbre(Noeud *n, ArbreQuat **a, ArbreQuat *parent) {
     }
     insererNoeudArbre(n, &enfant, *a);
 }
-*/
 
-void insererNoeudArbre(Noeud *n, ArbreQuat **a, ArbreQuat *parent) {
-    // Vérifiez si l'arbre est NULL
-    if (*a == NULL) {
-        // Créez un nouvel arbre et insérez le nœud
-        *a = creerArbreQuat(n->x, n->y, parent->coteX / 2, parent->coteY / 2);
-        (*a)->noeud = n;
-        // Mettez à jour le pointeur de l'arbre parent vers le nouvel arbre
-        if (parent != NULL) {
-            if (strcmp(ou_inserer(n, parent), "no") == 0) {
-                parent->no = *a;
-            } else if (strcmp(ou_inserer(n, parent), "ne") == 0) {
-                parent->ne = *a;
-            } else if (strcmp(ou_inserer(n, parent), "so") == 0) {
-                parent->so = *a;
-            } else if (strcmp(ou_inserer(n, parent), "se") == 0) {
-                parent->se = *a;
-            }
-        }
-    } else if ((*a)->noeud != NULL) {
-        // Si l'arbre est une feuille, créez un nouvel arbre pour le nœud existant et le nouveau nœud
-        Noeud *existingNode = (*a)->noeud;
-        (*a)->noeud = NULL;
-        insererNoeudArbre(existingNode, a, *a);
-        insererNoeudArbre(n, a, *a);
-    } else {
-        // Si l'arbre n'est pas une feuille, descendez dans l'arbre pour insérer le nœud
-        if (strcmp(ou_inserer(n, *a), "no") == 0) {
-            insererNoeudArbre(n, &((*a)->no), *a);
-        } else if (strcmp(ou_inserer(n, *a), "ne") == 0) {
-            insererNoeudArbre(n, &((*a)->ne), *a);
-        } else if (strcmp(ou_inserer(n, *a), "so") == 0) {
-            insererNoeudArbre(n, &((*a)->so), *a);
-        } else if (strcmp(ou_inserer(n, *a), "se") == 0) {
-            insererNoeudArbre(n, &((*a)->se), *a);
-        }
-    }
-}
-
-
-
-/*
 Noeud *rechercheCreeNoeudArbre(Reseau *R, ArbreQuat **a, ArbreQuat *parent, double x, double y) {
     if (*a == NULL) {
         // Si l'arbre est vide, créer un nouveau nœud et l'insérer dans le réseau
@@ -209,128 +170,55 @@ Noeud *rechercheCreeNoeudArbre(Reseau *R, ArbreQuat **a, ArbreQuat *parent, doub
         R->nbNoeuds++;
         
         return new_node;
-    } else if ((*a)->noeud != NULL) {
+    }
+    
+    if ((*a)->noeud != NULL) {
         // Si l'arbre est une feuille
         if ((*a)->noeud->x == x && (*a)->noeud->y == y) {
-            printf("Le noeud existe deja\n");
+            printf("Le noeud existe déjà\n");
             // Si le nœud existe déjà dans l'arbre, le retourner
             return (*a)->noeud;
-        } else {
-            // Si le nœud n'existe pas, descendre plus profondément dans l'arbre pour continuer la recherche ou l'insertion
-            Noeud *new_node = (Noeud *)malloc(sizeof(Noeud));
-            if (new_node == NULL) {
-                fprintf(stderr, "Erreur : Allocation mémoire échouée pour le nouveau nœud\n");
-                return NULL;
-            }
-            new_node->x = x;
-            new_node->y = y;
-            new_node->num = R->nbNoeuds + 1;
-            insererNoeudArbre(new_node, a, parent);
-            
-            // Ajouter le nœud au réseau
-            CellNoeud *nouveau = (CellNoeud *)malloc(sizeof(CellNoeud));
-            if (nouveau == NULL) {
-                fprintf(stderr, "Erreur : Allocation mémoire échouée pour la cellule de nœud\n");
-                free(new_node);
-                return NULL;
-            }
-            nouveau->nd = new_node;
-            nouveau->suiv = R->noeuds;
-            R->noeuds = nouveau;
-            R->nbNoeuds++;
-            
-            return new_node;
         }
-    } else {
-        // Si l'arbre est une cellule interne, continuer à descendre dans l'arbre pour rechercher ou insérer le nœud
-        Noeud *nouveauNoeud = (Noeud *)malloc(sizeof(Noeud));
-        if (nouveauNoeud == NULL) {
-            fprintf(stderr, "Erreur : Allocation mémoire échouée pour le nouveau nœud\n");
-            return NULL;
-        }
-        nouveauNoeud->x = x;
-        nouveauNoeud->y = y;
-        nouveauNoeud->num = R->nbNoeuds + 1;
-        char *quadrant = ou_inserer(nouveauNoeud, *a);
-        if (quadrant == NULL) {
-            fprintf(stderr, "Erreur : Quadrant invalide dans rechercheCreeNoeudArbre\n");
-            return NULL;
-        }
-        ArbreQuat **child_tree = NULL;
-        if (strcmp(quadrant, "so") == 0) {
-            child_tree = &((*a)->so);
-        } else if (strcmp(quadrant, "se") == 0) {
-            child_tree = &((*a)->se);
-        } else if (strcmp(quadrant, "no") == 0) {
-            child_tree = &((*a)->no);
-        } else if (strcmp(quadrant, "ne") == 0) {
-            child_tree = &((*a)->ne);
-        } else {
-            fprintf(stderr, "Erreur : Quadrant invalide dans rechercheCreeNoeudArbre\n");
-            free(nouveauNoeud);
-            return NULL;
-        }
-        return rechercheCreeNoeudArbre(R, child_tree, *a, x, y);
+        // Sinon, nous devons diviser cette feuille et insérer à nouveau le noeud
+        // Copions le noeud existant dans un nouvel emplacement
+        Noeud *old_node = (*a)->noeud;
+        (*a)->noeud = NULL; // L'arbre devient une cellule interne
+        insererNoeudArbre(old_node, a, parent);
     }
-}
-*/
+    
+    Noeud temp;
+    temp.x = x;
+    temp.y = y;
 
-Noeud *rechercheCreeNoeudArbre(Reseau *R, ArbreQuat **a, ArbreQuat *parent, double x, double y) {
-    Noeud *n = NULL;
-    // Vérifiez si l'arbre est NULL
-    if (*a == NULL) {
-        // Créez un nouvel arbre et insérez le nœud
-        n = (Noeud *)malloc(sizeof(Noeud));
-        n->x = x;
-        n->y = y;
-        *a = creerArbreQuat(n->x, n->y, parent->coteX / 2, parent->coteY / 2);
-        (*a)->noeud = n;
-        // Mettez à jour le pointeur de l'arbre parent vers le nouvel arbre
-        if (parent != NULL) {
-            if (strcmp(ou_inserer(n, parent), "no") == 0) {
-                parent->no = *a;
-            } else if (strcmp(ou_inserer(n, parent), "ne") == 0) {
-                parent->ne = *a;
-            } else if (strcmp(ou_inserer(n, parent), "so") == 0) {
-                parent->so = *a;
-            } else if (strcmp(ou_inserer(n, parent), "se") == 0) {
-                parent->se = *a;
-            }
-        }
-    } else if ((*a)->noeud != NULL) {
-        // Si l'arbre est une feuille, vérifiez si le nœud existe déjà
-        if ((*a)->noeud->x == x && (*a)->noeud->y == y) {
-            n = (*a)->noeud;
-        } else {
-            // Si le nœud n'existe pas, créez un nouvel arbre pour le nœud existant et le nouveau nœud
-            Noeud *existingNode = (*a)->noeud;
-            n = (Noeud *)malloc(sizeof(Noeud));
-            n->x = x;
-            n->y = y;
-            (*a)->noeud = NULL;
-            insererNoeudArbre(existingNode, a, *a);
-            insererNoeudArbre(n, a, *a);
-        }
-    } else {
-        // Si l'arbre n'est pas une feuille, descendez dans l'arbre pour insérer ou rechercher le nœud
-        n = (Noeud *)malloc(sizeof(Noeud));
-        n->x = x;
-        n->y = y;
-        if (strcmp(ou_inserer(n, *a), "no") == 0) {
-            n = rechercheCreeNoeudArbre(R, &((*a)->no), *a, x, y);
-        } else if (strcmp(ou_inserer(n, *a), "ne") == 0) {
-            n = rechercheCreeNoeudArbre(R, &((*a)->ne), *a, x, y);
-        } else if (strcmp(ou_inserer(n, *a), "so") == 0) {
-            n = rechercheCreeNoeudArbre(R, &((*a)->so), *a, x, y);
-        } else if (strcmp(ou_inserer(n, *a), "se") == 0) {
-            n = rechercheCreeNoeudArbre(R, &((*a)->se), *a, x, y);
-        }
+    // Utilisation du nœud temporaire pour déterminer le quadrant
+    char *quadrant = ou_inserer(&temp, *a);
+    if (quadrant == NULL) {
+        fprintf(stderr, "Erreur : Quadrant invalide dans rechercheCreeNoeudArbre\n");
+        return NULL;
     }
-    return n;
+
+    
+    ArbreQuat **child_tree = NULL;
+    if (strcmp(quadrant, "so") == 0) {
+        child_tree = &((*a)->so);
+    } else if (strcmp(quadrant, "se") == 0) {
+        child_tree = &((*a)->se);
+    } else if (strcmp(quadrant, "no") == 0) {
+        child_tree = &((*a)->no);
+    } else if (strcmp(quadrant, "ne") == 0) {
+        child_tree = &((*a)->ne);
+    } else {
+        fprintf(stderr, "Erreur : Quadrant invalide dans rechercheCreeNoeudArbre\n");
+        return NULL;
+    }
+    
+    // Ajout d'une condition pour éviter une boucle infinie
+    if (*child_tree != NULL && (*child_tree)->noeud != NULL && (*child_tree)->noeud->x == x && (*child_tree)->noeud->y == y) {
+        return (*child_tree)->noeud;
+    }
+
+    return rechercheCreeNoeudArbre(R, child_tree, *a, x, y);
 }
-
-
-
 
 
 
@@ -436,6 +324,7 @@ Reseau *reconstitueReseauArbre(Chaines *C) {
             // Gestion des voisins
             if (noeudPrecedent != NULL) {
                 ajouterVoisins(noeudPrecedent, noeud);
+                ajouterVoisins(noeud, noeudPrecedent);
             }
             noeudPrecedent = noeud;
             cellPoint = cellPoint->suiv;

@@ -59,6 +59,8 @@ Noeud* rechercheCreeNoeudListe(Reseau *R, double x, double y) {
     return n;
 }
 //On veut ajouter n1 à n2
+
+/*
 void ajouterVoisins(Noeud *n1, Noeud *n2) {
     if (n1 == NULL || n2 == NULL) {
         perror("Erreur dans ajouterVoisins de paramètres\n");
@@ -92,6 +94,46 @@ void ajouterVoisins(Noeud *n1, Noeud *n2) {
     nouveau_voisin2->nd = n1;
     nouveau_voisin2->suiv = n2->voisins;
     n2->voisins = nouveau_voisin2;
+}
+*/
+
+void ajouterVoisins(Noeud *n1, Noeud *n2) {
+    if (n1 == NULL || n2 == NULL) {
+        fprintf(stderr, "Erreur : Tentative d'ajout de voisins avec des nœuds nuls\n");
+        return;
+    }
+
+    // Vérifie si n2 est déjà dans la liste des voisins de n1
+    CellNoeud *c_n_voisins = n1->voisins;
+    /*
+    while (c_n_voisins != NULL) {
+        if (c_n_voisins->nd == n2) {
+            printf("Les nœuds sont déjà voisins\n");
+            return;
+        }
+        c_n_voisins = c_n_voisins->suiv;
+    }
+    */
+    // Ajoute n2 à la liste des voisins de n1
+    CellNoeud *nouveau_voisin = (CellNoeud *)malloc(sizeof(CellNoeud));
+    if (nouveau_voisin == NULL) {
+        fprintf(stderr, "Erreur : Allocation mémoire échouée pour la cellule de voisins\n");
+        return;
+    }
+    nouveau_voisin->nd = n2;
+    nouveau_voisin->suiv = n1->voisins;
+    n1->voisins = nouveau_voisin;
+
+    // Répète le processus pour ajouter n1 à la liste des voisins de n2
+    CellNoeud *nouveau_voisin_n2 = (CellNoeud *)malloc(sizeof(CellNoeud));
+    if (nouveau_voisin_n2 == NULL) {
+        fprintf(stderr, "Erreur : Allocation mémoire échouée pour la cellule de voisins\n");
+        free(nouveau_voisin); // Libérer la mémoire précédemment allouée
+        return;
+    }
+    nouveau_voisin_n2->nd = n1;
+    nouveau_voisin_n2->suiv = n2->voisins;
+    n2->voisins = nouveau_voisin_n2;
 }
 
 
@@ -217,7 +259,8 @@ int nbLiaisons(Reseau *R){
         CellNoeud *c_n_voisins=c_n->nd->voisins;
         while(c_n_voisins!=NULL){
             compteur++;
-            c_n_voisins=c_n_voisins->suiv;
+            if(c_n_voisins->suiv!=NULL)
+                c_n_voisins=c_n_voisins->suiv;
         }
         c_n=c_n->suiv;
     }
