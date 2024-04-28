@@ -4,15 +4,14 @@
 #include "Reseau.h"
 #include "Chaine.h"
 
-extern int M;
 
 typedef struct{
-  int nbElement; //pas necessaire ici
+  int nbElement; 
   int tailleMax;
   CellNoeud** T;
 } TableHachage ;
 
-int fonction_hach(int k);
+int fonction_hach(int k,int M);
 Noeud *rechercheCreeNoeudHachage(Reseau *R,TableHachage *TH,double x,double y);
 Reseau* reconstitueReseauHachage(Chaines *C, int m);
 void ajouterVoisins_H(Noeud *n1, Noeud *n2);

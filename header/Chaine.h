@@ -24,7 +24,7 @@ typedef struct {
 } Chaines;
 
 Chaines* lectureChaines(FILE *f);
-int nb_points(CellPoint *c); //Fonction rajoutée de notre part afin de compter le nombre de points dans une liste de points
+int nb_points(CellPoint *c); 
 void ecrireChaines(Chaines *C, FILE *f);
 void afficheChainesSVG(Chaines *C, char* nomInstance);
 double distance_euclidienne(double xa,double xb,double ya,double yb);
