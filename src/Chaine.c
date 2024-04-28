@@ -146,6 +146,7 @@ double longueurChaine(CellChaine *c){
     }
     double somme=0.0;
     CellPoint *cp=c->points;
+    //On parcourt les points d'une chaîne
     while(cp && cp->suiv){
         somme+=distance_euclidienne(cp->x,cp->suiv->x,cp->y,cp->suiv->y);
         cp=cp->suiv;
@@ -159,6 +160,7 @@ double longueurTotale(Chaines *C){
         return 0.0;
     }
     double somme=0.0;
+    //On parcourt les chaines
     CellChaine *cc=C->chaines;
     while(cc!=NULL){
         somme+=longueurChaine(cc);
@@ -173,6 +175,7 @@ int comptePointsTotal(Chaines *C){
         return -1;
     }
     int i=0;
+    //On parcourt les chaines
     CellChaine* cc=C->chaines;
     while(cc!=NULL){
         CellPoint* cp=cc->points;
@@ -186,6 +189,7 @@ void liberer_les_chaines(Chaines *C){
         if(C==NULL) return;
         CellChaine *cc=C->chaines;
         CellChaine *cc_temp=NULL;
+        //On parcourt les chaines
         while(cc){
             cc_temp=cc;
             CellPoint *cp=cc->points;

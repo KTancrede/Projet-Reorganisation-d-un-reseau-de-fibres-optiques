@@ -104,7 +104,7 @@ void ajouterVoisins(Noeud *n1, Noeud *n2) {
     }
 
     // Vérifie si n2 est déjà dans la liste des voisins de n1
-    CellNoeud *c_n_voisins = n1->voisins;
+    //CellNoeud *c_n_voisins = n1->voisins;
     /*
     while (c_n_voisins != NULL) {
         if (c_n_voisins->nd == n2) {
@@ -297,7 +297,7 @@ void ecrireReseau(Reseau *R, FILE *f){
         return;
     }
     fprintf(f,"NbNoeuds: %d\n",R->nbNoeuds);
-    fprintf(f,"NbLiaisons: %d\n",nbLiaisons(R));
+    //fprintf(f,"NbLiaisons: %d\n",nbLiaisons(R));
     fprintf(f,"NbCommodites: %d\n",nbCommodites(R));
     fprintf(f,"Gamma: %d\n\n",R->gamma);
 

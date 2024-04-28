@@ -7,9 +7,8 @@
 #include "../header/Hachage.h"
 #include "../header/Chaine.h"
 
-int M=150;
 
-int fonction_hach(int k){
+int fonction_hach(int k,int M){
     float A=(sqrt(5)-1)/2;
     int H=floor(M*(k*A-floor(k*A)));
     return H;
@@ -49,7 +48,7 @@ Noeud *rechercheCreeNoeudHachage(Reseau *R,TableHachage *TH,double x,double y){
         return NULL;
     }
     //On cherche dans la table s'il y a un noeud de ces coordonnes
-    int clef_noeud=fonction_hach(floor(x+y));
+    int clef_noeud=fonction_hach(floor(x+y),TH->tailleMax);
     CellNoeud* liste_chainee_clef=TH->T[clef_noeud];
     while(liste_chainee_clef!=NULL){
         Noeud *noeud=liste_chainee_clef->nd;
@@ -73,7 +72,7 @@ Noeud *rechercheCreeNoeudHachage(Reseau *R,TableHachage *TH,double x,double y){
             TH->T[clef_noeud] = nouvelle_cellule;
         } else {
             CellNoeud *derniere_cellule = TH->T[clef_noeud];
-            while (derniere_cellule->suiv != NULL) {
+            while (derniere_cellule != NULL && derniere_cellule->suiv != NULL) {
                 derniere_cellule = derniere_cellule->suiv;
             }
             derniere_cellule->suiv = nouvelle_cellule;
