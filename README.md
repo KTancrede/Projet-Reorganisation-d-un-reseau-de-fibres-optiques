@@ -1,7 +1,5 @@
 # Projet : Réorganisation d’un réseau de fibres optiques
-## Réalisé par Tancrède KOWAL (28606347)
 
-*Avant de commencer je tiens à préciser que je devais faire ce projet avec Nassim Hamida mais qu'il a arreté la licence debut mars, je l'ai donc réalisé tout seul.*
 
 Nous allons dans un premier temps implémenter différentes stuctures de données afin de gérer un réseau composé de fibre, de commodités et de points.
 Dans un second temps nous nous attarderons sur une analyse statistique de ces différentes strucures.  
